@@ -69,16 +69,11 @@ api_org() {
 
   local dir="${API_DIR}/${API_ORG}"
   local f_org="${dir}/${API_ORG}.json"
-  local f_org_members="${dir}/${API_ORG}.members.json"
 
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   if [[ $( ${find} "${f_org}" -mmin +$(( 60*24 )) -print ) ]]; then
     _gh "orgs/${API_ORG}" "${f_org}"
-  fi
-
-  if [[ $( ${find} "${f_org_members}" -mmin +$(( 60*24 )) -print ) ]]; then
-    _gh "orgs/${API_ORG}/public_members" "${f_org_members}"
   fi
 
   _popd || exit 1
