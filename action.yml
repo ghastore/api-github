@@ -20,7 +20,7 @@ inputs:
   api_dir:
     description: "API Directory"
     required: true
-    default: "data/github"
+    default: "api/github"
   api_org:
     description: "API Organization"
     required: true
