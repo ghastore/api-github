@@ -15,6 +15,7 @@ API_TOKEN="${7}"
 
 # Apps.
 date="$( command -v date )"
+find="$( command -v find )"
 gh="$( command -v gh )"
 git="$( command -v git )"
 jq="$( command -v jq )"
@@ -66,11 +67,19 @@ api_org() {
   echo "--- [GITHUB] ORGANIZATION"
   _pushd "${d_src}" || exit 1
 
-  local dir; dir="${API_DIR}/${API_ORG}"
+  local dir="${API_DIR}/${API_ORG}"
+  local f_org="${dir}/${API_ORG}.json"
+  local f_org_members="${dir}/${API_ORG}.members.json"
+
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  _gh "orgs/${API_ORG}" "${dir}/${API_ORG}.json"
-  _gh "orgs/${API_ORG}/public_members" "${dir}/${API_ORG}.members.json"
+  if [[ $( ${find} "${f_org}" -mmin +$(( 60*24 )) -print ) ]]; then
+    _gh "orgs/${API_ORG}" "${f_org}"
+  fi
+
+  if [[ $( ${find} "${f_org_members}" -mmin +$(( 60*24 )) -print ) ]]; then
+    _gh "orgs/${API_ORG}/public_members" "${f_org_members}"
+  fi
 
   _popd || exit 1
 }
@@ -83,15 +92,23 @@ api_repos() {
   echo "--- [GITHUB] REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
-  local dir; dir="${API_DIR}/${API_ORG}/repos"
+  local dir="${API_DIR}/${API_ORG}/repos"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local repos
   readarray -t repos < <( _gh_list "orgs/${API_ORG}/repos?type=public" ".[].name" )
 
   for repo in "${repos[@]}"; do
-    _gh "repos/${API_ORG}/${repo}" "${dir}/${repo}.json"
-    _gh "repos/${API_ORG}/${repo}/readme" "${dir}/${repo}.readme.json"
+    local f_repo="${dir}/${repo}.json"
+    local f_readme="${dir}/${repo}.readme.json"
+
+    if [[ $( ${find} "${f_repo}" -mmin +$(( 60*24 )) -print ) ]]; then
+      _gh "repos/${API_ORG}/${repo}" "${f_repo}"
+    fi
+
+    if [[ $( ${find} "${f_readme}" -mmin +$(( 60*24 )) -print ) ]]; then
+      _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
+    fi
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir}/_all.json"
@@ -107,14 +124,18 @@ api_users() {
   echo "--- [GITHUB] USERS"
   _pushd "${d_src}" || exit 1
 
-  local dir; dir="${API_DIR}/${API_ORG}/users"
+  local dir="${API_DIR}/${API_ORG}/users"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_ORG}/public_members" ".[].login" )
 
   for user in "${users[@]}"; do
-    _gh "users/${user}" "${dir}/${user}.json"
+    local f_user="${dir}/${user}.json"
+
+    if [[ $( ${find} "${f_user}" -mmin +$(( 60*24 )) -print ) ]]; then
+      _gh "users/${user}" "${f_user}"
+    fi
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir}/_all.json"
