@@ -76,7 +76,7 @@ api_org() {
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   if [[ ! -f "${f_org}" ]] || [[ $( ${find} "${f_org}" -mmin ${TIME_MOD} -print ) ]]; then
-    echo "Get file '${f_org}'..."
+    echo "Get file '${API_ORG}.json'..."
     _gh "orgs/${API_ORG}" "${f_org}"
   else
     echo "File '${f_org}' is not changed!"
@@ -104,14 +104,14 @@ api_repos() {
     local f_readme="${dir}/${repo}.readme.json"
 
     if [[ ! -f "${f_repo}" ]] || [[ $( ${find} "${f_repo}" -mmin ${TIME_MOD} -print ) ]]; then
-      echo "Get file '${f_repo}'..."
+      echo "Get file '${repo}.json'..."
       _gh "repos/${API_ORG}/${repo}" "${f_repo}"
     else
       echo "File '${f_repo}' is not changed!"
     fi
 
     if [[ ! -f "${f_readme}" ]] || [[ $( ${find} "${f_readme}" -mmin ${TIME_MOD} -print ) ]]; then
-      echo "Get file '${f_readme}'..."
+      echo "Get file '${repo}.readme.json'..."
       _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
     else
       echo "File '${f_readme}' is not changed!"
@@ -141,7 +141,7 @@ api_users() {
     local f_user="${dir}/${user}.json"
 
     if [[ ! -f "${f_user}" ]] || [[ $( ${find} "${f_user}" -mmin ${TIME_MOD} -print ) ]]; then
-      echo "Get file '${f_user}'..."
+      echo "Get file '${user}.json'..."
       _gh "users/${user}" "${f_user}"
     else
       echo "File '${f_user}' is not changed!"
