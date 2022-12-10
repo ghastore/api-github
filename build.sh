@@ -87,7 +87,7 @@ api_repos() {
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local repos
-  readarray -t repos < <( _gh_list "orgs/${API_ORG}/repos" ".[].name" )
+  readarray -t repos < <( _gh_list "orgs/${API_ORG}/repos?type=public" ".[].name" )
 
   for repo in "${repos[@]}"; do
     _gh "repos/${API_ORG}/${repo}" "${dir}/${repo}.json"
