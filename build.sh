@@ -69,7 +69,8 @@ api_org() {
   local dir="${API_DIR}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  _gh "orgs/${API_OWNER}" "${dir}/${API_OWNER}.json"
+  local api="orgs/${API_OWNER}"
+  echo "Get '${api}'..." && _gh "${api}" "${dir}/${API_OWNER}.json"
 
   _popd || exit 1
 }
@@ -89,8 +90,9 @@ api_repos() {
   readarray -t repos < <( _gh_list "orgs/${API_OWNER}/repos?type=public" ".[].name" )
 
   for repo in "${repos[@]}"; do
-    _gh "repos/${API_OWNER}/${repo}" "${dir}/${repo}.json"
-    _gh "repos/${API_OWNER}/${repo}/readme" "${dir}/${repo}.readme.json"
+    local api="repos/${API_OWNER}/${repo}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${repo}.json"
+    echo "Get '${api}/readme'..." && _gh "${api}/readme" "${dir}/${repo}.readme.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/${API_OWNER}.repos.json"
@@ -113,8 +115,9 @@ api_users() {
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/public_members" ".[].login" )
 
   for user in "${users[@]}"; do
-    _gh "users/${user}" "${dir}/${user}.json"
-    _gh "users/${user}/gpg_keys" "${dir}/${user}.gpg.json"
+    local api="users/${user}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
+    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_OWNER}.users.json"
