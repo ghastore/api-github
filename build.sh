@@ -12,6 +12,7 @@ GIT_TOKEN="${4}"
 API_DIR="${5}"
 API_ORG="${6}"
 API_TOKEN="${7}"
+TIME_MOD="+$(( 60*24 ))"
 
 # Apps.
 date="$( command -v date )"
@@ -72,7 +73,9 @@ api_org() {
 
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  _gh "orgs/${API_ORG}" "${f_org}"
+  if [[ ! -f "${f_org}" ]] || [[ $( ${find} "${f_org}" -mmin ${TIME_MOD} -print ) ]]; then
+    _gh "orgs/${API_ORG}" "${f_org}"
+  fi
 
   _popd || exit 1
 }
@@ -95,8 +98,13 @@ api_repos() {
     local f_repo="${dir}/${repo}.json"
     local f_readme="${dir}/${repo}.readme.json"
 
-    _gh "repos/${API_ORG}/${repo}" "${f_repo}"
-    _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
+    if [[ ! -f "${f_repo}" ]] || [[ $( ${find} "${f_repo}" -mmin ${TIME_MOD} -print ) ]]; then
+      _gh "repos/${API_ORG}/${repo}" "${f_repo}"
+    fi
+
+    if [[ ! -f "${f_readme}" ]] || [[ $( ${find} "${f_readme}" -mmin ${TIME_MOD} -print ) ]]; then
+      _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
+    fi
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/${API_ORG}.repos.json"
@@ -120,7 +128,10 @@ api_users() {
 
   for user in "${users[@]}"; do
     local f_user="${dir}/${user}.json"
-    _gh "users/${user}" "${f_user}"
+
+    if [[ ! -f "${f_user}" ]] || [[ $( ${find} "${f_user}" -mmin ${TIME_MOD} -print ) ]]; then
+      _gh "users/${user}" "${f_user}"
+    fi
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_ORG}.users.json"
