@@ -72,9 +72,7 @@ api_org() {
 
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  if [[ $( ${find} "${f_org}" -mmin +$(( 60*24 )) -print ) ]]; then
-    _gh "orgs/${API_ORG}" "${f_org}"
-  fi
+  _gh "orgs/${API_ORG}" "${f_org}"
 
   _popd || exit 1
 }
@@ -97,13 +95,8 @@ api_repos() {
     local f_repo="${dir}/${repo}.json"
     local f_readme="${dir}/${repo}.readme.json"
 
-    if [[ $( ${find} "${f_repo}" -mmin +$(( 60*24 )) -print ) ]]; then
-      _gh "repos/${API_ORG}/${repo}" "${f_repo}"
-    fi
-
-    if [[ $( ${find} "${f_readme}" -mmin +$(( 60*24 )) -print ) ]]; then
-      _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
-    fi
+    _gh "repos/${API_ORG}/${repo}" "${f_repo}"
+    _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
@@ -127,10 +120,7 @@ api_users() {
 
   for user in "${users[@]}"; do
     local f_user="${dir}/${user}.json"
-
-    if [[ $( ${find} "${f_user}" -mmin +$(( 60*24 )) -print ) ]]; then
-      _gh "users/${user}" "${f_user}"
-    fi
+    _gh "users/${user}" "${f_user}"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/users.json"
