@@ -106,7 +106,7 @@ api_repos() {
     fi
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir}/_all.json"
+  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
 
   _popd || exit 1
 }
@@ -133,7 +133,7 @@ api_users() {
     fi
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir}/_all.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/users.json"
 
   _popd || exit 1
 }
