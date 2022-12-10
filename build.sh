@@ -76,6 +76,7 @@ api_org() {
 
   [[ ! -d "${d_org}" ]] && _mkdir "${d_org}"
 
+  # Org API.
   if [[ ! -f "${f_org}" ]] || [[ $( ${find} "${f_org}" -mmin ${TIME_MOD} -print ) ]]; then
     echo "Get API '${u_org}'..." && _gh "${u_org}" "${f_org}"
   else
@@ -105,12 +106,14 @@ api_repos() {
     local f_repo="${d_repos}/${repo}.json"
     local f_readme="${d_repos}/${repo}.readme.json"
 
+    # Repos API.
     if [[ ! -f "${f_repo}" ]] || [[ $( ${find} "${f_repo}" -mmin ${TIME_MOD} -print ) ]]; then
       echo "Get API '${u_repos}'..." && _gh "${u_repos}" "${f_repo}"
     else
       echo "File '${f_repo}' is not changed!"
     fi
 
+    # Readme API.
     if [[ ! -f "${f_readme}" ]] || [[ $( ${find} "${f_readme}" -mmin ${TIME_MOD} -print ) ]]; then
       echo "Get API '${u_readme}'..." && _gh "${u_readme}" "${f_readme}"
     else
@@ -139,12 +142,22 @@ api_users() {
 
   for user in "${users[@]}"; do
     local u_user="users/${user}"
+    local u_gpg="${u_user}/gpg_keys"
     local f_user="${d_users}/${user}.json"
+    local f_gpg="${d_users}/${user}.gpg.json"
 
+    # Users API.
     if [[ ! -f "${f_user}" ]] || [[ $( ${find} "${f_user}" -mmin ${TIME_MOD} -print ) ]]; then
       echo "Get API '${u_user}'..." && _gh "${u_user}" "${f_user}"
     else
       echo "File '${f_user}' is not changed!"
+    fi
+
+    # GPG API.
+    if [[ ! -f "${f_gpg}" ]] || [[ $( ${find} "${f_gpg}" -mmin ${TIME_MOD} -print ) ]]; then
+      echo "Get API '${u_gpg}'..." && _gh "${u_gpg}" "${f_gpg}"
+    else
+      echo "File '${f_gpg}' is not changed!"
     fi
   done
 
