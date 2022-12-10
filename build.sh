@@ -77,6 +77,8 @@ api_org() {
 
   if [[ ! -f "${f_org}" ]] || [[ $( ${find} "${f_org}" -mmin ${TIME_MOD} -print ) ]]; then
     _gh "orgs/${API_ORG}" "${f_org}"
+  else
+    echo "File '${f_org}' is not changed!"
   fi
 
   _popd || exit 1
@@ -102,10 +104,14 @@ api_repos() {
 
     if [[ ! -f "${f_repo}" ]] || [[ $( ${find} "${f_repo}" -mmin ${TIME_MOD} -print ) ]]; then
       _gh "repos/${API_ORG}/${repo}" "${f_repo}"
+    else
+      echo "File '${f_repo}' is not changed!"
     fi
 
     if [[ ! -f "${f_readme}" ]] || [[ $( ${find} "${f_readme}" -mmin ${TIME_MOD} -print ) ]]; then
       _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
+    else
+      echo "File '${f_readme}' is not changed!"
     fi
   done
 
@@ -133,6 +139,8 @@ api_users() {
 
     if [[ ! -f "${f_user}" ]] || [[ $( ${find} "${f_user}" -mmin ${TIME_MOD} -print ) ]]; then
       _gh "users/${user}" "${f_user}"
+    else
+      echo "File '${f_user}' is not changed!"
     fi
   done
 
