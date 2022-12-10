@@ -99,7 +99,7 @@ api_repos() {
     _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
+  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/${API_ORG}.repos.json"
 
   _popd || exit 1
 }
@@ -123,7 +123,7 @@ api_users() {
     _gh "users/${user}" "${f_user}"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/users.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_ORG}.users.json"
 
   _popd || exit 1
 }
