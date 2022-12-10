@@ -10,7 +10,7 @@ GIT_USER="${2}"
 GIT_EMAIL="${3}"
 GIT_TOKEN="${4}"
 API_DIR="${5}"
-API_ORG="${6}"
+API_OWNER="${6}"
 API_TOKEN="${7}"
 
 # Vars.
@@ -70,14 +70,14 @@ api_org() {
   echo "--- [GITHUB] ORGANIZATION"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_ORG}"
-  local f_org="${dir}/${API_ORG}.json"
+  local u_org="orgs/${API_OWNER}"
+  local d_org="${API_DIR}/${API_OWNER}"
+  local f_org="${d_org}/${API_OWNER}.json"
 
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  [[ ! -d "${d_org}" ]] && _mkdir "${d_org}"
 
   if [[ ! -f "${f_org}" ]] || [[ $( ${find} "${f_org}" -mmin ${TIME_MOD} -print ) ]]; then
-    echo "Get file '${API_ORG}.json'..."
-    _gh "orgs/${API_ORG}" "${f_org}"
+    echo "Get API '${u_org}'..." && _gh "${u_org}" "${f_org}"
   else
     echo "File '${f_org}' is not changed!"
   fi
@@ -93,32 +93,32 @@ api_repos() {
   echo "--- [GITHUB] REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_ORG}/repos"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  local d_repos="${API_DIR}/${API_OWNER}/repos"
+  [[ ! -d "${d_repos}" ]] && _mkdir "${d_repos}"
 
   local repos
-  readarray -t repos < <( _gh_list "orgs/${API_ORG}/repos?type=public" ".[].name" )
+  readarray -t repos < <( _gh_list "orgs/${API_OWNER}/repos?type=public" ".[].name" )
 
   for repo in "${repos[@]}"; do
-    local f_repo="${dir}/${repo}.json"
-    local f_readme="${dir}/${repo}.readme.json"
+    local u_repos="repos/${API_OWNER}/${repo}"
+    local u_readme="repos/${API_OWNER}/${repo}/readme"
+    local f_repo="${d_repos}/${repo}.json"
+    local f_readme="${d_repos}/${repo}.readme.json"
 
     if [[ ! -f "${f_repo}" ]] || [[ $( ${find} "${f_repo}" -mmin ${TIME_MOD} -print ) ]]; then
-      echo "Get file '${repo}.json'..."
-      _gh "repos/${API_ORG}/${repo}" "${f_repo}"
+      echo "Get API '${u_repos}'..." && _gh "${u_repos}" "${f_repo}"
     else
       echo "File '${f_repo}' is not changed!"
     fi
 
     if [[ ! -f "${f_readme}" ]] || [[ $( ${find} "${f_readme}" -mmin ${TIME_MOD} -print ) ]]; then
-      echo "Get file '${repo}.readme.json'..."
-      _gh "repos/${API_ORG}/${repo}/readme" "${f_readme}"
+      echo "Get API '${u_readme}'..." && _gh "${u_readme}" "${f_readme}"
     else
       echo "File '${f_readme}' is not changed!"
     fi
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/${API_ORG}.repos.json"
+  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${d_repos%/*}/${API_OWNER}.repos.json"
 
   _popd || exit 1
 }
@@ -131,24 +131,24 @@ api_users() {
   echo "--- [GITHUB] USERS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_ORG}/users"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  local d_users="${API_DIR}/${API_OWNER}/users"
+  [[ ! -d "${d_users}" ]] && _mkdir "${d_users}"
 
   local users
-  readarray -t users < <( _gh_list "orgs/${API_ORG}/public_members" ".[].login" )
+  readarray -t users < <( _gh_list "orgs/${API_OWNER}/public_members" ".[].login" )
 
   for user in "${users[@]}"; do
-    local f_user="${dir}/${user}.json"
+    local u_user="users/${user}"
+    local f_user="${d_users}/${user}.json"
 
     if [[ ! -f "${f_user}" ]] || [[ $( ${find} "${f_user}" -mmin ${TIME_MOD} -print ) ]]; then
-      echo "Get file '${user}.json'..."
-      _gh "users/${user}" "${f_user}"
+      echo "Get API '${u_user}'..." && _gh "${u_user}" "${f_user}"
     else
       echo "File '${f_user}' is not changed!"
     fi
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_ORG}.users.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${d_users%/*}/${API_OWNER}.users.json"
 
   _popd || exit 1
 }

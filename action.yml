@@ -18,14 +18,14 @@ inputs:
     description: "Git Token"
     required: true
   api_dir:
-    description: "API Directory"
+    description: "Local API Directory"
     required: true
     default: "api/github"
-  api_org:
-    description: "API Organization"
+  api_owner:
+    description: "GitHub API Owner"
     required: true
   api_token:
-    description: "API Token"
+    description: "GitHub API Token"
     required: true
 runs:
   using: "docker"
@@ -36,5 +36,5 @@ runs:
     - ${{ inputs.git_email }}
     - ${{ inputs.git_token }}
     - ${{ inputs.api_dir }}
-    - ${{ inputs.api_org }}
+    - ${{ inputs.api_owner }}
     - ${{ inputs.api_token }}
