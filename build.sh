@@ -15,10 +15,10 @@ API_TOKEN="${7}"
 
 # Apps.
 date="$( command -v date )"
+gh="$( command -v gh )"
 git="$( command -v git )"
 jq="$( command -v jq )"
 mkdir="$( command -v mkdir )"
-gh="$( command -v gh )"
 
 # Dirs.
 d_src="/root/git/repo"
