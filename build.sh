@@ -37,9 +37,11 @@ ${git} config --global init.defaultBranch 'main'
 
 init() {
   ts="$( _timestamp )"
-  api_org
-  api_repos
-  api_users
+  clone \
+    && api_org \
+    && api_repos \
+    && api_users \
+    && push
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
