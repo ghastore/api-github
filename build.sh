@@ -39,10 +39,10 @@ init() {
   ts="$( _timestamp )"
   clone \
     && api_org \
-    && api_repos \
-    && api_users \
-    && api_collaborators \
-    && api_events \
+    && api_org_repos \
+    && api_org_members \
+    && api_org_collaborators \
+    && api_org_events \
     && push
 }
 
@@ -81,7 +81,7 @@ api_org() {
 # API: REPOSITORIES.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_repos() {
+api_org_repos() {
   echo "--- [GITHUB] REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
@@ -103,18 +103,18 @@ api_repos() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: USERS.
+# API: MEMBERS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_users() {
-  echo "--- [GITHUB] USERS"
+api_org_members() {
+  echo "--- [GITHUB] MEMBERS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}/users"
+  local dir="${API_DIR}/orgs/${API_OWNER}/members"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
-  readarray -t users < <( _gh_list "orgs/${API_OWNER}/public_members" ".[].login" )
+  readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
 
   for user in "${users[@]}"; do
     local api="users/${user}"
@@ -122,7 +122,7 @@ api_users() {
     echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/users.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/members.json"
 
   _popd || exit 1
 }
@@ -131,7 +131,7 @@ api_users() {
 # API: OUTSIDE COLLABORATORS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_collaborators() {
+api_org_collaborators() {
   echo "--- [GITHUB] OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
@@ -156,7 +156,7 @@ api_collaborators() {
 # API: EVENTS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_events() {
+api_org_events() {
   echo "--- [GITHUB] EVENTS"
   _pushd "${d_src}" || exit 1
 
