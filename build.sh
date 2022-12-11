@@ -68,7 +68,7 @@ api_org() {
   echo "--- [GITHUB] ORGANIZATION"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_OWNER}"
+  local dir="${API_DIR}/orgs/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="orgs/${API_OWNER}"
@@ -85,7 +85,7 @@ api_repos() {
   echo "--- [GITHUB] REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_OWNER}/repos"
+  local dir="${API_DIR}/orgs/${API_OWNER}/repos"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local repos
@@ -110,7 +110,7 @@ api_users() {
   echo "--- [GITHUB] USERS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_OWNER}/users"
+  local dir="${API_DIR}/orgs/${API_OWNER}/users"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
@@ -135,7 +135,7 @@ api_collaborators() {
   echo "--- [GITHUB] OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_OWNER}/collaborators"
+  local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
@@ -160,7 +160,7 @@ api_events() {
   echo "--- [GITHUB] EVENTS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/${API_OWNER}"
+  local dir="${API_DIR}/orgs/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="orgs/${API_OWNER}/events"
