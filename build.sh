@@ -72,7 +72,7 @@ api_org() {
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="orgs/${API_OWNER}"
-  echo "Get '${api}'..." && _gh "${api}" "${dir}/${API_OWNER}.json"
+  echo "Get '${api}'..." && _gh "${api}" "${dir}/org.json"
 
   _popd || exit 1
 }
@@ -97,7 +97,7 @@ api_repos() {
     echo "Get '${api}/readme'..." && _gh "${api}/readme" "${dir}/${repo}.readme.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/${API_OWNER}.repos.json"
+  ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
 
   _popd || exit 1
 }
@@ -122,7 +122,7 @@ api_users() {
     echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_OWNER}.users.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/users.json"
 
   _popd || exit 1
 }
@@ -147,7 +147,7 @@ api_collaborators() {
     echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_OWNER}.collaborators.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/collaborators.json"
 
   _popd || exit 1
 }
@@ -164,7 +164,7 @@ api_events() {
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="orgs/${API_OWNER}/events"
-  echo "Get '${api}'..." && _gh "${api}" "${dir}/${API_OWNER}.events.json"
+  echo "Get '${api}'..." && _gh "${api}" "${dir}/events.json"
 
   _popd || exit 1
 }
