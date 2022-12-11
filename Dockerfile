@@ -1,6 +1,6 @@
 FROM alpine
 
-LABEL "name"="GitHub API"
+LABEL "name"="GitHub Organization API"
 LABEL "description"=""
 LABEL "maintainer"=""
 LABEL "repository"=""

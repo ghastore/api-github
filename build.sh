@@ -39,8 +39,10 @@ init() {
   ts="$( _timestamp )"
   clone \
     && api_org \
-    && api_org_repos \
-    && api_org_users \
+    && api_repos \
+    && api_users \
+    && api_collaborators \
+    && api_events \
     && push
 }
 
@@ -76,10 +78,10 @@ api_org() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: ORGANIZATION REPOSITORIES.
+# API: REPOSITORIES.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org_repos() {
+api_repos() {
   echo "--- [GITHUB] REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
@@ -101,10 +103,10 @@ api_org_repos() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: ORGANIZATION USERS.
+# API: USERS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org_users() {
+api_users() {
   echo "--- [GITHUB] USERS"
   _pushd "${d_src}" || exit 1
 
@@ -121,6 +123,48 @@ api_org_users() {
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_OWNER}.users.json"
+
+  _popd || exit 1
+}
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# API: OUTSIDE COLLABORATORS.
+# -------------------------------------------------------------------------------------------------------------------- #
+
+api_collaborators() {
+  echo "--- [GITHUB] OUTSIDE COLLABORATORS"
+  _pushd "${d_src}" || exit 1
+
+  local dir="${API_DIR}/${API_OWNER}/collaborators"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+
+  local users
+  readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
+
+  for user in "${users[@]}"; do
+    local api="users/${user}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
+    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
+  done
+
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/${API_OWNER}.collaborators.json"
+
+  _popd || exit 1
+}
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# API: EVENTS.
+# -------------------------------------------------------------------------------------------------------------------- #
+
+api_events() {
+  echo "--- [GITHUB] EVENTS"
+  _pushd "${d_src}" || exit 1
+
+  local dir="${API_DIR}/${API_OWNER}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+
+  local api="orgs/${API_OWNER}/events"
+  echo "Get '${api}'..." && _gh "${api}" "${dir}/${API_OWNER}.events.json"
 
   _popd || exit 1
 }
