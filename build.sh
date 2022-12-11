@@ -135,7 +135,7 @@ api_org_collaborators() {
   echo "--- [GITHUB] OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
+  local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
@@ -147,7 +147,7 @@ api_org_collaborators() {
     echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/collaborators.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/outside_collaborators.json"
 
   _popd || exit 1
 }
