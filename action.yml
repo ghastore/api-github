@@ -21,6 +21,10 @@ inputs:
     description: "Local API Directory"
     required: true
     default: "api/github"
+  api_type:
+    description: "GitHub API Type"
+    required: true
+    default: "orgs"
   api_owner:
     description: "GitHub API Owner"
     required: true
@@ -36,5 +40,6 @@ runs:
     - ${{ inputs.git_email }}
     - ${{ inputs.git_token }}
     - ${{ inputs.api_dir }}
+    - ${{ inputs.api_type }}
     - ${{ inputs.api_owner }}
     - ${{ inputs.api_token }}

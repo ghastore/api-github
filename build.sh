@@ -10,8 +10,9 @@ GIT_USER="${2}"
 GIT_EMAIL="${3}"
 GIT_TOKEN="${4}"
 API_DIR="${5}"
-API_OWNER="${6}"
-API_TOKEN="${7}"
+API_TYPE="${6}"
+API_OWNER="${7}"
+API_TOKEN="${8}"
 
 # Apps.
 date="$( command -v date )"
@@ -37,13 +38,20 @@ ${git} config --global init.defaultBranch 'main'
 
 init() {
   ts="$( _timestamp )"
-  clone \
-    && api_org \
-    && api_org_repos \
-    && api_org_members \
-    && api_org_collaborators \
-    && api_org_events \
-    && push
+  clone
+  case "${API_TYPE}" in
+    'orgs')
+      gh_owner && gh_repos && gh_events && gh_org_members && gh_org_collaborators
+      ;;
+    'users')
+      gh_owner && gh_repos && gh_events
+      ;;
+    *)
+      echo "[ERROR] UNKNOWN API TYPE!"
+      exit 1
+      ;;
+  esac
+  push
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -61,35 +69,49 @@ clone() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: ORGANIZATION.
+# GITHUB API: OWNER.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org() {
-  echo "--- [GITHUB] ORGANIZATION"
+gh_owner() {
+  echo "--- [GITHUB] OWNER"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}"
+  local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  local api="orgs/${API_OWNER}"
-  echo "Get '${api}'..." && _gh "${api}" "${dir}/org.json"
+  local api="${API_TYPE}/${API_OWNER}"
+  echo "Get '${api}'..." && _gh "${api}" "${dir}/info.json"
 
   _popd || exit 1
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: REPOSITORIES.
+# GITHUB API: REPOSITORIES.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org_repos() {
+gh_repos() {
   echo "--- [GITHUB] REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}/repos"
+  local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
+  local url
+  case "${API_TYPE}" in
+    'orgs')
+      url="${API_TYPE}/${API_OWNER}/repos?type=public"
+      ;;
+    'users')
+      url="${API_TYPE}/${API_OWNER}/repos"
+      ;;
+    *)
+      echo "[ERROR] UNKNOWN API TYPE!"
+      exit 1
+      ;;
+  esac
+
   local repos
-  readarray -t repos < <( _gh_list "orgs/${API_OWNER}/repos?type=public" ".[].name" )
+  readarray -t repos < <( _gh_list "${url}" ".[].name" )
 
   for repo in "${repos[@]}"; do
     local api="repos/${API_OWNER}/${repo}"
@@ -103,11 +125,11 @@ api_org_repos() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: MEMBERS.
+# GITHUB API: ORG MEMBERS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org_members() {
-  echo "--- [GITHUB] MEMBERS"
+gh_org_members() {
+  echo "--- [GITHUB] ORG: MEMBERS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
@@ -128,11 +150,11 @@ api_org_members() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: OUTSIDE COLLABORATORS.
+# GITHUB API: ORG OUTSIDE COLLABORATORS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org_collaborators() {
-  echo "--- [GITHUB] OUTSIDE COLLABORATORS"
+gh_org_collaborators() {
+  echo "--- [GITHUB] ORG: OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
@@ -153,17 +175,31 @@ api_org_collaborators() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# API: EVENTS.
+# GITHUB API: EVENTS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-api_org_events() {
+gh_events() {
   echo "--- [GITHUB] EVENTS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  local api="orgs/${API_OWNER}/events"
+  local url
+  case "${API_TYPE}" in
+    'orgs')
+      url="${API_TYPE}/${API_OWNER}/events"
+      ;;
+    'users')
+      url="${API_TYPE}/${API_OWNER}/events/public"
+      ;;
+    *)
+      echo "[ERROR] UNKNOWN API TYPE!"
+      exit 1
+      ;;
+  esac
+
+  local api="${url}"
   echo "Get '${api}'..." && _gh "${api}" "${dir}/events.json"
 
   _popd || exit 1
