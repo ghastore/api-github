@@ -182,7 +182,7 @@ gh_events() {
   echo "--- [GITHUB] EVENTS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}"
+  local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local url
