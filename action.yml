@@ -1,9 +1,9 @@
 name: "GitHub API Fetch"
 author: "v77 Development <mail@v77.dev>"
-description: "GitHub Action to get API responses and save them to repository."
+description: "GitHub Action to get GitHub API responses and save them to repository."
 branding:
   icon: "anchor"
-  color: "blue"
+  color: "gray-dark"
 inputs:
   git_repo:
     description: "Git Repository"

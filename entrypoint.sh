@@ -1,5 +1,5 @@
 #!/bin/bash -e
 
-bash -c "/build.sh $*"
+bash -c "/fetch.sh $*"
 
 exit 0
