@@ -1,4 +1,4 @@
-name: "GitHub API"
+name: "GitHub API Fetch"
 author: "v77 Development <mail@v77.dev>"
 description: "GitHub Action to get API responses and save them to repository."
 branding:

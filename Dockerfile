@@ -1,6 +1,6 @@
 FROM alpine
 
-LABEL "name"="GitHub API"
+LABEL "name"="GitHub API Fetch"
 LABEL "description"="GitHub Action to get API responses and save them to repository."
 LABEL "maintainer"="v77 Development <mail@v77.dev>"
 LABEL "repository"="https://github.com/ghastore/api-github"
