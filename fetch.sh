@@ -69,7 +69,7 @@ clone() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# GITHUB API: OWNER.
+# API: OWNER.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_owner() {
@@ -86,7 +86,7 @@ gh_owner() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# GITHUB API: REPOSITORIES.
+# API: REPOSITORIES.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_repos() {
@@ -125,57 +125,7 @@ gh_repos() {
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# GITHUB API: ORG MEMBERS.
-# -------------------------------------------------------------------------------------------------------------------- #
-
-gh_org_members() {
-  echo "--- [GITHUB] MEMBERS"
-  _pushd "${d_src}" || exit 1
-
-  local dir="${API_DIR}/orgs/${API_OWNER}/members"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
-
-  local users
-  readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
-
-  for user in "${users[@]}"; do
-    local api="users/${user}"
-    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
-    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
-  done
-
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/members.json"
-
-  _popd || exit 1
-}
-
-# -------------------------------------------------------------------------------------------------------------------- #
-# GITHUB API: ORG OUTSIDE COLLABORATORS.
-# -------------------------------------------------------------------------------------------------------------------- #
-
-gh_org_collaborators() {
-  echo "--- [GITHUB] OUTSIDE COLLABORATORS"
-  _pushd "${d_src}" || exit 1
-
-  local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
-
-  local users
-  readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
-
-  for user in "${users[@]}"; do
-    local api="users/${user}"
-    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
-    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
-  done
-
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/outside_collaborators.json"
-
-  _popd || exit 1
-}
-
-# -------------------------------------------------------------------------------------------------------------------- #
-# GITHUB API: EVENTS.
+# API: EVENTS.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_events() {
@@ -201,6 +151,56 @@ gh_events() {
 
   local api="${url}"
   echo "Get '${api}'..." && _gh "${api}" "${dir}/events.json"
+
+  _popd || exit 1
+}
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# API: ORG MEMBERS.
+# -------------------------------------------------------------------------------------------------------------------- #
+
+gh_org_members() {
+  echo "--- [GITHUB] MEMBERS"
+  _pushd "${d_src}" || exit 1
+
+  local dir="${API_DIR}/orgs/${API_OWNER}/members"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+
+  local users
+  readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
+
+  for user in "${users[@]}"; do
+    local api="users/${user}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
+    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
+  done
+
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/members.json"
+
+  _popd || exit 1
+}
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# API: ORG OUTSIDE COLLABORATORS.
+# -------------------------------------------------------------------------------------------------------------------- #
+
+gh_org_collaborators() {
+  echo "--- [GITHUB] OUTSIDE COLLABORATORS"
+  _pushd "${d_src}" || exit 1
+
+  local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+
+  local users
+  readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
+
+  for user in "${users[@]}"; do
+    local api="users/${user}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
+    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
+  done
+
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/outside_collaborators.json"
 
   _popd || exit 1
 }
