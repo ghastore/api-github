@@ -1,9 +1,9 @@
 FROM alpine
 
-LABEL "name"="GitHub Organization API"
-LABEL "description"=""
-LABEL "maintainer"=""
-LABEL "repository"=""
+LABEL "name"="GitHub API"
+LABEL "description"="GitHub Action to get API responses and save them to repository."
+LABEL "maintainer"="v77 Development <mail@v77.dev>"
+LABEL "repository"="https://github.com/ghastore/api-github"
 LABEL "homepage"="https://github.com/ghastore"
 
 COPY *.sh /

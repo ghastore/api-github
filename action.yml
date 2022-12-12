@@ -1,9 +1,9 @@
-name: "GitHub Organization API"
-author: ""
-description: ""
+name: "GitHub API"
+author: "v77 Development <mail@v77.dev>"
+description: "GitHub Action to get API responses and save them to repository."
 branding:
-  icon: ""
-  color: ""
+  icon: "anchor"
+  color: "blue"
 inputs:
   git_repo:
     description: "Git Repository"
