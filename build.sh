@@ -129,7 +129,7 @@ gh_repos() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_org_members() {
-  echo "--- [GITHUB] ORG: MEMBERS"
+  echo "--- [GITHUB] MEMBERS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
@@ -154,7 +154,7 @@ gh_org_members() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_org_collaborators() {
-  echo "--- [GITHUB] ORG: OUTSIDE COLLABORATORS"
+  echo "--- [GITHUB] OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
