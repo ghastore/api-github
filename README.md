@@ -5,18 +5,18 @@ Action для скачивания ответов GitHub API и сохранен
 ## Workflow Syntax
 
 ```yml
-name: "API Fetch"
+name: "GitHub API"
 
 on:
   schedule:
     - cron:  '0 */6 * * *'
 
 jobs:
-  build:
+  fetch:
     runs-on: ubuntu-latest
-    name: "Build"
+    name: "Fetch"
     steps:
-      - name: "GitHub API"
+      - name: "github"
         uses: ghastore/api-github@main
         with:
           git_repo: "${{ github.server_url }}/${{ github.repository }}.git"
