@@ -39,6 +39,8 @@ ${git} config --global init.defaultBranch 'main'
 init() {
   ts="$( _timestamp )"
   clone
+  _gh_rate
+
   case "${API_TYPE}" in
     'orgs')
       gh_owner && gh_repos && gh_events && gh_org_members && gh_org_collaborators
@@ -51,6 +53,7 @@ init() {
       exit 1
       ;;
   esac
+
   _gh_rate
   push
 }
