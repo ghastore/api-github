@@ -76,9 +76,6 @@ gh_owner() {
   echo "--- [GITHUB] ${API_OWNER^^} / INFO"
   _pushd "${d_src}" || exit 1
 
-  # Check rate limit.
-  _gh_rate
-
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
@@ -95,9 +92,6 @@ gh_owner() {
 gh_repos() {
   echo "--- [GITHUB] ${API_OWNER^^} / REPOSITORIES"
   _pushd "${d_src}" || exit 1
-
-  # Check rate limit.
-  _gh_rate
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
@@ -140,9 +134,6 @@ gh_events() {
   echo "--- [GITHUB] ${API_OWNER^^} / EVENTS"
   _pushd "${d_src}" || exit 1
 
-  # Check rate limit.
-  _gh_rate
-
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
@@ -174,9 +165,6 @@ gh_org_members() {
   echo "--- [GITHUB] ${API_OWNER^^} / MEMBERS"
   _pushd "${d_src}" || exit 1
 
-  # Check rate limit.
-  _gh_rate
-
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
@@ -203,9 +191,6 @@ gh_org_members() {
 gh_org_collaborators() {
   echo "--- [GITHUB] ${API_OWNER^^} / COLLABORATORS"
   _pushd "${d_src}" || exit 1
-
-  # Check rate limit.
-  _gh_rate
 
   local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
@@ -279,28 +264,6 @@ _gh_list() {
 # API: Download items to file.
 _gh_file() {
   ${gh} api "${1}" > "${2}"
-}
-
-_gh_rate() {
-  local limit
-  limit=$( _gh 'rate_limit' '.rate.limit' )
-  local used
-  used=$( _gh 'rate_limit' '.rate.used' )
-  local remaining
-  remaining=$( _gh 'rate_limit' '.rate.remaining' )
-  local reset
-  reset=$( _gh 'rate_limit' '.rate.reset' )
-  reset=$( date +'%Y-%m-%d %H:%M:%S' -d "@${reset}" )
-
-  read -r -d '' rate_help <<- EOF
-Your current rate:
-  Limit: ${limit}
-  Used: ${used}
-  Remaining: ${remaining}
-  Reset: ${reset}
-EOF
-
-  echo "${rate_help}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
