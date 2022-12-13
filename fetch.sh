@@ -304,7 +304,7 @@ EOF
 
   if [[ "${remaining}" == "0" ]]; then
     echo "RATE LIMIT EXCEEDED!"
-    exit 1
+    #exit 1
   fi
 }
 
