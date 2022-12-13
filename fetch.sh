@@ -77,7 +77,7 @@ gh_owner() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="${API_TYPE}/${API_OWNER}"
   echo "Get '${api}'..." && _gh "${api}" "${dir}/info.json"
@@ -94,7 +94,7 @@ gh_repos() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local url
   case "${API_TYPE}" in
@@ -114,11 +114,9 @@ gh_repos() {
   readarray -t repos < <( _gh_list "${url}" ".[].name" )
 
   for repo in "${repos[@]}"; do
-    local api_repo="repos/${API_OWNER}/${repo}"
-    local dir_repo="${dir}/${repo}"
-    _mkdir "${dir_repo}"
-    echo "Get '${api_repo}'..." && _gh "${api_repo}" "${dir_repo}/info.json"
-    echo "Get '${api_repo}/readme'..." && _gh "${api_repo}/readme" "${dir_repo}/readme.json"
+    local api="repos/${API_OWNER}/${repo}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${repo}.json"
+    echo "Get '${api}/readme'..." && _gh "${api}/readme" "${dir}/${repo}.readme.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
@@ -135,7 +133,7 @@ gh_events() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local url
   case "${API_TYPE}" in
@@ -166,17 +164,15 @@ gh_org_members() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
 
   for user in "${users[@]}"; do
-    local api_user="users/${user}"
-    local dir_user="${dir}/${user}"
-    _mkdir "${dir_user}"
-    echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
-    echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
+    local api="users/${user}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
+    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/members.json"
@@ -192,21 +188,19 @@ gh_org_collaborators() {
   echo "--- [GITHUB] OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
-  _mkdir "${dir}"
+  local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
 
   for user in "${users[@]}"; do
-    local api_user="users/${user}"
-    local dir_user="${dir}/${user}"
-    _mkdir "${dir_user}"
-    echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
-    echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
+    local api="users/${user}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
+    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/collaborators.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/outside_collaborators.json"
 
   _popd || exit 1
 }
@@ -249,7 +243,7 @@ _timestamp() {
 
 # Make directory.
 _mkdir() {
-  [[ ! -d "${1}" ]] && ${mkdir} -p "${1}"
+  ${mkdir} -p "${1}"
 }
 
 # GH API: Get list items.
