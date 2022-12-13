@@ -76,11 +76,14 @@ gh_owner() {
   echo "--- [GITHUB] ${API_OWNER^^} / INFO"
   _pushd "${d_src}" || exit 1
 
+  # Check rate limit.
+  _gh_rate
+
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="${API_TYPE}/${API_OWNER}"
-  echo "Get '${api}'..." && _gh "${api}" "${dir}/info.json"
+  echo "Get '${api}'..." && _gh_file "${api}" "${dir}/info.json"
 
   _popd || exit 1
 }
@@ -92,6 +95,9 @@ gh_owner() {
 gh_repos() {
   echo "--- [GITHUB] ${API_OWNER^^} / REPOSITORIES"
   _pushd "${d_src}" || exit 1
+
+  # Check rate limit.
+  _gh_rate
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
@@ -117,8 +123,8 @@ gh_repos() {
     local api_repo="repos/${API_OWNER}/${repo}"
     local dir_repo="${dir}/${repo}"
     [[ ! -d "${dir_repo}" ]] && _mkdir "${dir_repo}"
-    echo "Get '${api_repo}'..." && _gh "${api_repo}" "${dir_repo}/info.json"
-    echo "Get '${api_repo}/readme'..." && _gh "${api_repo}/readme" "${dir_repo}/readme.json"
+    echo "Get '${api_repo}'..." && _gh_file "${api_repo}" "${dir_repo}/info.json"
+    echo "Get '${api_repo}/readme'..." && _gh_file "${api_repo}/readme" "${dir_repo}/readme.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
@@ -133,6 +139,9 @@ gh_repos() {
 gh_events() {
   echo "--- [GITHUB] ${API_OWNER^^} / EVENTS"
   _pushd "${d_src}" || exit 1
+
+  # Check rate limit.
+  _gh_rate
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
@@ -152,7 +161,7 @@ gh_events() {
   esac
 
   local api="${url}"
-  echo "Get '${api}'..." && _gh "${api}" "${dir}/events.json"
+  echo "Get '${api}'..." && _gh_file "${api}" "${dir}/events.json"
 
   _popd || exit 1
 }
@@ -165,6 +174,9 @@ gh_org_members() {
   echo "--- [GITHUB] ${API_OWNER^^} / MEMBERS"
   _pushd "${d_src}" || exit 1
 
+  # Check rate limit.
+  _gh_rate
+
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
@@ -175,8 +187,8 @@ gh_org_members() {
     local api_user="users/${user}"
     local dir_user="${dir}/${user}"
     [[ ! -d "${dir_user}" ]] && _mkdir "${dir_user}"
-    echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
-    echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
+    echo "Get '${api_user}'..." && _gh_file "${api_user}" "${dir_user}/info.json"
+    echo "Get '${api_user}/gpg_keys'..." && _gh_file "${api_user}/gpg_keys" "${dir_user}/gpg.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/members.json"
@@ -192,6 +204,9 @@ gh_org_collaborators() {
   echo "--- [GITHUB] ${API_OWNER^^} / COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
+  # Check rate limit.
+  _gh_rate
+
   local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
@@ -202,8 +217,8 @@ gh_org_collaborators() {
     local api_user="users/${user}"
     local dir_user="${dir}/${user}"
     [[ ! -d "${dir_user}" ]] && _mkdir "${dir_user}"
-    echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
-    echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
+    echo "Get '${api_user}'..." && _gh_file "${api_user}" "${dir_user}/info.json"
+    echo "Get '${api_user}/gpg_keys'..." && _gh_file "${api_user}/gpg_keys" "${dir_user}/gpg.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/collaborators.json"
@@ -246,20 +261,51 @@ _popd() {
 _timestamp() {
   ${date} -u '+%Y-%m-%d %T'
 }
-
 # Make directory.
 _mkdir() {
   ${mkdir} -p "${1}"
 }
 
-# GH API: Get list items.
+# API: Get items.
+_gh() {
+  ${gh} api "${1}" -q "${2}"
+}
+
+# API: Get list items.
 _gh_list() {
   ${gh} api --paginate "${1}" -q "${2}" | sort
 }
 
-# GH API: Download.
-_gh() {
+# API: Download items to file.
+_gh_file() {
   ${gh} api "${1}" > "${2}"
+}
+
+_gh_rate() {
+  local limit
+  limit=$( _gh 'rate_limit' '.rate.limit' )
+  local used
+  used=$( _gh 'rate_limit' '.rate.used' )
+  local remaining
+  remaining=$( _gh 'rate_limit' '.rate.remaining' )
+  local reset
+  reset=$( _gh 'rate_limit' '.rate.reset' )
+  reset=$( date +'%Y-%m-%d %H:%M:%S' -d "@${reset}" )
+
+  read -r -d '' rate_help <<- EOF
+Your current rate:
+  Limit: ${limit}
+  Used: ${used}
+  Remaining: ${remaining}
+  Reset: ${reset}
+EOF
+
+  echo "${rate_help}"
+
+  if [[ "${remaining}" == "0" ]]; then
+    echo "RATE LIMIT EXCEEDED!"
+    exit 1
+  fi
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
