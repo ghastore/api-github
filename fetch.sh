@@ -114,10 +114,11 @@ gh_repos() {
   readarray -t repos < <( _gh_list "${url}" ".[].name" )
 
   for repo in "${repos[@]}"; do
-    local api="repos/${API_OWNER}/${repo}"
-    _mkdir "${dir}/${repo}"
-    echo "Get '${api}'..." && _gh "${api}" "${dir}/${repo}/info.json"
-    echo "Get '${api}/readme'..." && _gh "${api}/readme" "${dir}/${repo}/readme.json"
+    local api_repo="repos/${API_OWNER}/${repo}"
+    local dir_repo="${dir}/${repo}"
+    _mkdir "${dir_repo}"
+    echo "Get '${api_repo}'..." && _gh "${api_repo}" "${dir_repo}/info.json"
+    echo "Get '${api_repo}/readme'..." && _gh "${api_repo}/readme" "${dir_repo}/readme.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
@@ -171,9 +172,11 @@ gh_org_members() {
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
 
   for user in "${users[@]}"; do
-    local api="users/${user}"
-    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
-    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
+    local api_user="users/${user}"
+    local dir_user="${dir}/${user}"
+    _mkdir "${dir_user}"
+    echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
+    echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/members.json"
@@ -189,19 +192,21 @@ gh_org_collaborators() {
   echo "--- [GITHUB] OUTSIDE COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
-  local dir="${API_DIR}/orgs/${API_OWNER}/outside_collaborators"
+  local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
 
   for user in "${users[@]}"; do
-    local api="users/${user}"
-    echo "Get '${api}'..." && _gh "${api}" "${dir}/${user}.json"
-    echo "Get '${api}/gpg_keys'..." && _gh "${api}/gpg_keys" "${dir}/${user}.gpg.json"
+    local api_user="users/${user}"
+    local dir_user="${dir}/${user}"
+    _mkdir "${dir_user}"
+    echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
+    echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
   done
 
-  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/outside_collaborators.json"
+  ${jq} -nc '$ARGS.positional' --args "${users[@]}" > "${dir%/*}/collaborators.json"
 
   _popd || exit 1
 }
