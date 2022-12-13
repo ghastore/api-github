@@ -128,7 +128,7 @@ gh_repos() {
       local dir_contributor="${dir_repo}/${contributor}"
       _mkdir "${dir_contributor}"
       echo "Get '${api_contributor}'..." && _gh "${api_contributor}" "${dir_contributor}/info.json"
-      echo "Get '${api_contributor}/gpg_keys'..." && _gh "${api_contributor}/gpg_keys" "${api_contributor}/gpg.json"
+      echo "Get '${api_contributor}/gpg_keys'..." && _gh "${api_contributor}/gpg_keys" "${dir_contributor}/gpg.json"
     done
 
     ${jq} -nc '$ARGS.positional' --args "${contributors[@]}" > "${dir_repo}/contributors.json"
