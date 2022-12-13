@@ -73,7 +73,7 @@ clone() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_owner() {
-  echo "--- [GITHUB] OWNER"
+  echo "--- [GITHUB] ${API_OWNER^^} / INFO"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
@@ -90,7 +90,7 @@ gh_owner() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_repos() {
-  echo "--- [GITHUB] REPOSITORIES"
+  echo "--- [GITHUB] ${API_OWNER^^} / REPOSITORIES"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
@@ -131,7 +131,7 @@ gh_repos() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_events() {
-  echo "--- [GITHUB] EVENTS"
+  echo "--- [GITHUB] ${API_OWNER^^} / EVENTS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
@@ -162,7 +162,7 @@ gh_events() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_org_members() {
-  echo "--- [GITHUB] MEMBERS"
+  echo "--- [GITHUB] ${API_OWNER^^} / MEMBERS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
@@ -189,7 +189,7 @@ gh_org_members() {
 # -------------------------------------------------------------------------------------------------------------------- #
 
 gh_org_collaborators() {
-  echo "--- [GITHUB] OUTSIDE COLLABORATORS"
+  echo "--- [GITHUB] ${API_OWNER^^} / COLLABORATORS"
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
