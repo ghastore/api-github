@@ -77,7 +77,7 @@ gh_owner() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local api="${API_TYPE}/${API_OWNER}"
   echo "Get '${api}'..." && _gh "${api}" "${dir}/info.json"
@@ -94,7 +94,7 @@ gh_repos() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local url
   case "${API_TYPE}" in
@@ -116,7 +116,7 @@ gh_repos() {
   for repo in "${repos[@]}"; do
     local api_repo="repos/${API_OWNER}/${repo}"
     local dir_repo="${dir}/${repo}"
-    _mkdir "${dir_repo}"
+    [[ ! -d "${dir_repo}" ]] && _mkdir "${dir_repo}"
     echo "Get '${api_repo}'..." && _gh "${api_repo}" "${dir_repo}/info.json"
     echo "Get '${api_repo}/readme'..." && _gh "${api_repo}/readme" "${dir_repo}/readme.json"
   done
@@ -135,7 +135,7 @@ gh_events() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local url
   case "${API_TYPE}" in
@@ -166,7 +166,7 @@ gh_org_members() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
@@ -174,7 +174,7 @@ gh_org_members() {
   for user in "${users[@]}"; do
     local api_user="users/${user}"
     local dir_user="${dir}/${user}"
-    _mkdir "${dir_user}"
+    [[ ! -d "${dir_user}" ]] && _mkdir "${dir_user}"
     echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
     echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
   done
@@ -193,7 +193,7 @@ gh_org_collaborators() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
-  _mkdir "${dir}"
+  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
@@ -201,7 +201,7 @@ gh_org_collaborators() {
   for user in "${users[@]}"; do
     local api_user="users/${user}"
     local dir_user="${dir}/${user}"
-    _mkdir "${dir_user}"
+    [[ ! -d "${dir_user}" ]] && _mkdir "${dir_user}"
     echo "Get '${api_user}'..." && _gh "${api_user}" "${dir_user}/info.json"
     echo "Get '${api_user}/gpg_keys'..." && _gh "${api_user}/gpg_keys" "${dir_user}/gpg.json"
   done
@@ -249,7 +249,7 @@ _timestamp() {
 
 # Make directory.
 _mkdir() {
-  [[ ! -d "${1}" ]] && ${mkdir} -p "${1}"
+  ${mkdir} -p "${1}"
 }
 
 # GH API: Get list items.
