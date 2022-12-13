@@ -115,8 +115,9 @@ gh_repos() {
 
   for repo in "${repos[@]}"; do
     local api="repos/${API_OWNER}/${repo}"
-    echo "Get '${api}'..." && _gh "${api}" "${dir}/${repo}.json"
-    echo "Get '${api}/readme'..." && _gh "${api}/readme" "${dir}/${repo}.readme.json"
+    _mkdir "${dir}/${repo}"
+    echo "Get '${api}'..." && _gh "${api}" "${dir}/${repo}/info.json"
+    echo "Get '${api}/readme'..." && _gh "${api}/readme" "${dir}/${repo}/readme.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
@@ -253,7 +254,7 @@ _gh_list() {
 
 # GH API: Download.
 _gh() {
-  ${gh} api "${1}" > "${2}"
+  ${gh} api --paginate "${1}" > "${2}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
