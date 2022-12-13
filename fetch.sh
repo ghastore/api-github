@@ -122,6 +122,7 @@ gh_repos() {
 
     local contributors
     readarray -t contributors < <( _gh_list "${api_repo}/contributors" ".[].login" )
+
     for contributor in "${contributors[@]}"; do
       local api_contributor="users/${contributor}"
       local dir_contributor="${dir_repo}/${contributor}"
@@ -129,6 +130,8 @@ gh_repos() {
       echo "Get '${api_contributor}'..." && _gh "${api_contributor}" "${dir_contributor}/info.json"
       echo "Get '${api_contributor}/gpg_keys'..." && _gh "${api_contributor}/gpg_keys" "${api_contributor}/gpg.json"
     done
+
+    ${jq} -nc '$ARGS.positional' --args "${contributors[@]}" > "${dir_repo}/contributors.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
