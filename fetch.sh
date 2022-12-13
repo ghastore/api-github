@@ -268,14 +268,10 @@ _gh_file() {
 }
 
 _gh_rate() {
-  local limit
-  limit=$( _gh 'rate_limit' '.rate.limit' )
-  local used
-  used=$( _gh 'rate_limit' '.rate.used' )
-  local remaining
-  remaining=$( _gh 'rate_limit' '.rate.remaining' )
-  local reset
-  reset=$( _gh 'rate_limit' '.rate.reset' )
+  local limit; limit=$( _gh 'rate_limit' '.rate.limit' )
+  local used; used=$( _gh 'rate_limit' '.rate.used' )
+  local remaining; remaining=$( _gh 'rate_limit' '.rate.remaining' )
+  local reset; reset=$( _gh 'rate_limit' '.rate.reset' )
   reset=$( date +'%Y-%m-%d %H:%M:%S' -d "@${reset}" )
 
   read -r -d '' rate_help <<- EOF
