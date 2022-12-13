@@ -125,7 +125,7 @@ gh_repos() {
 
     for contributor in "${contributors[@]}"; do
       local api_contributor="users/${contributor}"
-      local dir_contributor="${dir_repo}/${contributor}"
+      local dir_contributor="${dir_repo}/contributors/${contributor}"
       _mkdir "${dir_contributor}"
       echo "Get '${api_contributor}'..." && _gh "${api_contributor}" "${dir_contributor}/info.json"
       echo "Get '${api_contributor}/gpg_keys'..." && _gh "${api_contributor}/gpg_keys" "${dir_contributor}/gpg.json"
