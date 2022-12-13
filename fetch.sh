@@ -39,8 +39,6 @@ ${git} config --global init.defaultBranch 'main'
 init() {
   ts="$( _timestamp )"
   clone
-  _gh_rate
-
   case "${API_TYPE}" in
     'orgs')
       gh_owner && gh_repos && gh_events && gh_org_members && gh_org_collaborators
@@ -53,8 +51,6 @@ init() {
       exit 1
       ;;
   esac
-
-  _gh_rate
   push
 }
 
@@ -268,24 +264,6 @@ _gh_list() {
 # API: Download items to file.
 _gh_file() {
   ${gh} api "${1}" > "${2}"
-}
-
-_gh_rate() {
-  local limit; limit=$( _gh 'rate_limit' '.rate.limit' )
-  local used; used=$( _gh 'rate_limit' '.rate.used' )
-  local remaining; remaining=$( _gh 'rate_limit' '.rate.remaining' )
-  local reset; reset=$( _gh 'rate_limit' '.rate.reset' )
-  reset=$( date +'%Y-%m-%d %H:%M:%S' -d "@${reset}" )
-
-  read -r -d '' rate_help <<- EOF
-Your current rate:
-  Limit: ${limit}
-  Used: ${used}
-  Remaining: ${remaining}
-  Reset: ${reset}
-EOF
-
-  echo "${rate_help}"
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
