@@ -77,7 +77,7 @@ gh_owner() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  _mkdir "${dir}"
 
   local api="${API_TYPE}/${API_OWNER}"
   echo "Get '${api}'..." && _gh "${api}" "${dir}/info.json"
@@ -94,7 +94,7 @@ gh_repos() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  _mkdir "${dir}"
 
   local url
   case "${API_TYPE}" in
@@ -119,19 +119,6 @@ gh_repos() {
     _mkdir "${dir_repo}"
     echo "Get '${api_repo}'..." && _gh "${api_repo}" "${dir_repo}/info.json"
     echo "Get '${api_repo}/readme'..." && _gh "${api_repo}/readme" "${dir_repo}/readme.json"
-
-    local contributors
-    readarray -t contributors < <( _gh_list "${api_repo}/contributors" ".[].login" )
-
-    for contributor in "${contributors[@]}"; do
-      local api_contributor="users/${contributor}"
-      local dir_contributor="${dir_repo}/contributors/${contributor}"
-      _mkdir "${dir_contributor}"
-      echo "Get '${api_contributor}'..." && _gh "${api_contributor}" "${dir_contributor}/info.json"
-      echo "Get '${api_contributor}/gpg_keys'..." && _gh "${api_contributor}/gpg_keys" "${dir_contributor}/gpg.json"
-    done
-
-    ${jq} -nc '$ARGS.positional' --args "${contributors[@]}" > "${dir_repo}/contributors.json"
   done
 
   ${jq} -nc '$ARGS.positional' --args "${repos[@]}" > "${dir%/*}/repos.json"
@@ -148,7 +135,7 @@ gh_events() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  _mkdir "${dir}"
 
   local url
   case "${API_TYPE}" in
@@ -179,7 +166,7 @@ gh_org_members() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
@@ -206,7 +193,7 @@ gh_org_collaborators() {
   _pushd "${d_src}" || exit 1
 
   local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
-  [[ ! -d "${dir}" ]] && _mkdir "${dir}"
+  _mkdir "${dir}"
 
   local users
   readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
@@ -262,7 +249,7 @@ _timestamp() {
 
 # Make directory.
 _mkdir() {
-  ${mkdir} -p "${1}"
+  [[ ! -d "${1}" ]] && ${mkdir} -p "${1}"
 }
 
 # GH API: Get list items.
