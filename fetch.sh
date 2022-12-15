@@ -96,13 +96,13 @@ gh_repos() {
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}/repos"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  local url
+  local api
   case "${API_TYPE}" in
     'orgs')
-      url="${API_TYPE}/${API_OWNER}/repos?type=public"
+      api="${API_TYPE}/${API_OWNER}/repos?type=public"
       ;;
     'users')
-      url="${API_TYPE}/${API_OWNER}/repos"
+      api="${API_TYPE}/${API_OWNER}/repos"
       ;;
     *)
       echo "[ERROR] UNKNOWN API TYPE!"
@@ -111,7 +111,7 @@ gh_repos() {
   esac
 
   local repos
-  readarray -t repos < <( _gh_list "${url}" ".[].name" )
+  readarray -t repos < <( _gh_list "${api}" ".[].name" )
 
   for repo in "${repos[@]}"; do
     local api_repo="repos/${API_OWNER}/${repo}"
@@ -137,13 +137,13 @@ gh_events() {
   local dir="${API_DIR}/${API_TYPE}/${API_OWNER}"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
-  local url
+  local api
   case "${API_TYPE}" in
     'orgs')
-      url="${API_TYPE}/${API_OWNER}/events"
+      api="${API_TYPE}/${API_OWNER}/events"
       ;;
     'users')
-      url="${API_TYPE}/${API_OWNER}/events/public"
+      api="${API_TYPE}/${API_OWNER}/events/public"
       ;;
     *)
       echo "[ERROR] UNKNOWN API TYPE!"
@@ -151,7 +151,6 @@ gh_events() {
       ;;
   esac
 
-  local api="${url}"
   echo "Get '${api}'..." && _gh_file "${api}" "${dir}/events.json"
 
   _popd || exit 1
@@ -168,8 +167,10 @@ gh_org_members() {
   local dir="${API_DIR}/orgs/${API_OWNER}/members"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
+  local api="orgs/${API_OWNER}/members"
+
   local users
-  readarray -t users < <( _gh_list "orgs/${API_OWNER}/members" ".[].login" )
+  readarray -t users < <( _gh_list "${api}" ".[].login" )
 
   for user in "${users[@]}"; do
     local api_user="users/${user}"
@@ -195,8 +196,10 @@ gh_org_collaborators() {
   local dir="${API_DIR}/orgs/${API_OWNER}/collaborators"
   [[ ! -d "${dir}" ]] && _mkdir "${dir}"
 
+  local api="orgs/${API_OWNER}/outside_collaborators"
+
   local users
-  readarray -t users < <( _gh_list "orgs/${API_OWNER}/outside_collaborators" ".[].login" )
+  readarray -t users < <( _gh_list "${api}" ".[].login" )
 
   for user in "${users[@]}"; do
     local api_user="users/${user}"

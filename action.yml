@@ -18,7 +18,7 @@ inputs:
     description: "Git Token"
     required: true
   api_dir:
-    description: "Local API Directory"
+    description: "GitHub API Local Directory"
     required: true
     default: "api/github"
   api_type:
